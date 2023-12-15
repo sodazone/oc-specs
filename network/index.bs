@@ -1,0 +1,207 @@
+<pre class='metadata'>
+Title: Ocelloids Network
+Shortname: oc-net
+Level: 1
+Status: DREAM
+Group: SO/DA zone
+Repository: sodazone/oc-specs
+URL: https://sodazone.github.io/oc-specs/network/
+Editor: The Zone Council, SO/DA https://soda.zone, spec@soda.zone
+Abstract: This document presents the functional specification of the Ocelloids Network, encompassing network governance through an onchain registry, participant roles, and detailed leasing processes for secure and transparent transactions.
+Complain About: accidental-2119 yes, missing-example-ids yes
+Markup Shorthands: markdown yes, css no
+Local Boilerplate: copyright yes, logo yes
+</pre>
+
+Introduction {#intro}
+=====================
+
+The Ocelloids Network operates as a secure collection of nodes governed by an onchain registry, ensuring vetted access and well-defined roles for Ocelloids Audit Nodes (OAN) and Ocelloids Network Nodes (ONN).
+Operating as a marketplace, the network enables Consumers to lease software Agents from Service Providers, leveraging blockchain technology for automated leasing and settlement. Continuous service level attestation, conducted by Audit Nodes, ensures the network's ongoing robust operation.
+
+Network {#network}
+==================
+
+An Ocelloids network is a collection of nodes under a common trust zone with vetted access for participation.
+
+The network is governed through an onchain registry, known as the [Network Registry](#network-registry), containing participant information and [network roles](#network-roles).
+
+Network participants have well-known identities tied to specific organizations, geolocations, and publicly accessible endpoints.
+
+Network Registry {#network-registry}
+------------------------------------
+
+The network registry has configured operator accounts with vetting privileges for onboarding of service providers and auditors.
+
+Each participant of the network has an associated <dfn export>Party Record</dfn>:
+
+<pre class=simpledef>
+Addresses: Addresses for Operator and Treasurer accounts.
+Contact details: E-mail, Organization Name, etc.
+Endpoints: URLs of the public endpoints.
+Geolocation: ISO 6709 geographic point location. 
+</pre>
+
+Network Roles {#network-roles}
+------------------------------
+
+Two node roles exist:
+
+<ol dfn-for=node-roles export>
+    1. <dfn>Ocelloids Audit Node</dfn> (OAN): Ensure correct ONN operation for agent execution.
+    2. <dfn>Ocelloids Network Node</dfn> (ONN): Function as service providers, executing agents and reporting to OANs.
+</ol>
+
+Service Leasing {#leasing}
+==========================
+
+This section provides a functional specification of the leasing process, from quote initiation to lease activation.
+
+Actors {#lease-actors}
+----------------------
+
+<ol dfn-for=actors export>
+    1. <dfn>Agent</dfn>: Program instances running in an ONN.
+    2. <dfn>Consumer</dfn>: Entities leasing agent executions for specific program instances on designated nodes within the network.
+    3. <dfn>Provider</dfn>: ONN service provider responsible for offering and running agents.
+    4. <dfn>Auditor</dfn>: OAN responsible for continuous service level attestation.
+</ol>
+
+Note: Programs are identified by the content address of their package, containing the executable bytecode or source code, and are exposed through vetted catalogues.
+
+Leasing Process {#lease-proc}
+-----------------------------
+
+The leasing process involves consumers initiating quotes, submitting deposits to blockchain for agent execution, continuous service level attestations, periodic payment claims, and automatic lease renewals,
+ensuring secure, transparent, and reliable transactions facilitated by blockchain technology.
+
+### Lease Agreement ### {#lease-proc-1}
+
+The lease agreement ensures that the Consumer commits a deposit before the ONN Provider provisions the Agent for execution.
+This process is designed to be secure, transparent, and reliant on blockchain technology for transaction and agreement verification.
+
+<figure>
+    <pre class=include>
+    path: diagrams/lease-proc-1.svg
+    </pre>
+    <figcaption>
+    Lease Agreement Sequence Diagram
+<details>
+    <summary>source code</summary>
+```
+actor Consumer
+participant "ONN\nProvider" as Provider
+
+autoactivation on
+
+Consumer -> Provider: 1. Quote(PCID)
+Provider --> Consumer: 2. Offer(PCID, Rate, Period)
+Consumer -> Blockchain: 3. Deposit(Amount, Offer)
+note over Blockchain: Locks funds for 1st period payment
+Blockchain --> Consumer:
+Consumer -> Provider: 4. DepositReceipt
+note over Provider: 5. Checks deposit and provisions the agent
+Provider -> Blockchain: 6. Lease(Offer, DepositReceipt)
+Blockchain --> Provider:
+Provider --> Consumer: 7. LeaseReceipt
+```
+    </details>
+    </figcaption>
+</figure>
+
+Note: The Program Content ID refers to a content-addressable location where the program package can be retrieved, e.g. an IPFS CID.
+
+<ol dfn-for=lease-proc export>
+    1. <dfn>Quote Request</dfn>: A Consumer initiates the leasing process by sending a Quote request to the ONN Provider, specifying the Program Content ID (PCID).
+    2. <dfn>Service Offer</dfn>: The ONN Provider responds with an Offer, including details such as the Program Content ID, leasing Rate, and Minimum Deposit required.
+    3. <dfn>Deposit Submission</dfn>: The Consumer submits a deposit to the Blockchain, indicating the Offer and the amount to be transferred.
+        The funds for one leasing period are locked.
+        If there are remaining funds in the deposit will be available for withdrawal by the consumer at any time.
+    4. <dfn>Deposit Receipt</dfn>: The Blockchain responds with a DepositReceipt for the Offer to the Consumer, confirming the deposit. The Consumer then provides this receipt to the ONN Provider.
+    5. <dfn>Agent Provisioning</dfn>: The ONN Provider verifies the deposit and provisions the Agent for execution based on the agreed Offer.
+    6. <dfn>Lease Confirmation</dfn>: The Provider submits the DepositReceipt to the Blockchain to create the Lease. The Blockchain responds with a LeaseReceipt.
+    7. <dfn>Lease Activation</dfn>: The ONN Provider receives the LeaseReceipt and confirms the lease activation to the Consumer.
+</ol>
+
+### Service Level Attestation ### {#lease-proc-2}
+
+The Service Level Attestation involves Audit Nodes continuously ensuring the correct operation and service level fulfillment of ONNs.
+
+<figure>
+    <pre class=include>
+    path: diagrams/lease-proc-2.svg
+    </pre>
+    <figcaption>
+    Service Level Attestation Sequence Diagram
+<details>
+  <summary>source code</summary>
+```
+participant "OAN\nAuditor" as OAN
+participant "ONN\nProvider" as Provider
+autoactivation on
+
+loop active leases
+  OAN -> Provider: 1. CheckAgentStatus(Lease)
+  Provider --> OAN: 2. AgentOperationalStatus
+  note over OAN: Probes and verifications trough direction connection
+  OAN -> Blockchain: 3. Record(AgentOperationalStatus)
+  note over OAN: Proper operational status record\n is required for payment capture
+  Blockchain --> OAN:
+end
+```
+</details>
+    </figcaption>
+</figure>
+
+Note: Given the network's trust assumptions, attestations and probes might be relaxed to focus on unintended operational deficiencies.
+
+<ol dfn-for=attestation-proc export>
+    1. <dfn>Check Agent Status</dfn>: OAN Auditor checks the operational status of Agents leased by Consumers from the ONN Provider.
+    2. <dfn>Status Attestation</dfn>: ONN Provider provides operational status attestations to the Audit Nodes, indicating the proper functioning of the leased services.
+    3. <dfn>Record on Blockchain</dfn>: OAN Auditor submits the operational status to the Blockchain through the AgentStatus transaction.
+</ol>
+
+This continuous attestation process ensures that proper operational status records are maintained, a prerequisite for capturing payment during lease periods.
+
+### Claim and Renewal ### {#lease-proc-3}
+
+At the end of each leasing period, the ONN service provider can claim payment, and an automatic renewal process is initiated.
+
+<figure>
+    <pre class=include>
+    path: diagrams/lease-proc-3.svg
+    </pre>
+    <figcaption>
+    Claim and Renewal Sequence Diagram
+<details>
+  <summary>source code</summary>
+```
+note over Provider: End of leasing period
+Provider -> Blockchain: 1. ClaimPaymentForPeriod(Lease)
+note over Blockchain: 2.1. Verifies latest agent status\n2.2. Transfers funds
+Blockchain --> Provider: 2. Period Payment
+Provider -> Blockchain: 3. CheckForRenewal(Lease)
+alt meets renewal conditions
+  Blockchain -->Provider: No
+  Provider -> Blockchain: Cancel(Lease, Reason)
+  Blockchain --> Provider:
+else 
+  Blockchain --> Provider: Yes
+  Provider -> Blockchain: Renew(Lease)
+  note over Blockchain: Locks next period funds
+end
+```
+</details>
+    </figcaption>
+</figure>
+
+<ol dfn-for=lease-proc export>
+    1. <dfn>Payment Claim</dfn>: ONN Provider claims payment for the concluded leasing period by submitting a ClaimPaymentForPeriod transaction to the Blockchain.
+    2. <dfn>Verify and Transfer</dfn>: Blockchain verifies the latest agent status and transfers funds to the ONN Provider if conditions are met.
+    3. <dfn>Renewal Check</dfn>: ONN Provider checks if renewal conditions are met. If conditions are met, Blockchain initiates the renewal process, locking funds for the next period.
+        If conditions are not met, Blockchain cancels the lease, and the ONN Provider takes appropriate actions.
+</ol>
+
+This process ensures a smooth transition between leasing periods, with automatic renewals and the flexibility to cancel if necessary.
+Consumers are responsible for maintaining sufficient deposit balances to cover renewals.
+
