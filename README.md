@@ -2,4 +2,4 @@
 
 Specifications related to the Ocelloids ecosystem.
 
-* [Ocelloids Network Specification](https://ocn-spec.pdf)
+* [Ocelloids Network Specification](https://github.com/sodazone/oc-specs/raw/main/dist/ocn-spec.pdf)
