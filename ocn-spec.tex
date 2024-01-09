@@ -1,0 +1,187 @@
+\documentclass{oc}
+
+%% Glossary Definition
+\makeglossaries
+
+\newglossaryentry{program}
+{
+  name=program,
+  description={Package containing executable bytecode or source code published through vetted catalogues}
+}
+
+\newglossaryentry{program-id}
+{
+  name={program content identifier},
+  description={Content-addressable location where the \gls*{program} package can be retrieved; e.g., an IPFS CID}
+}
+
+\newglossaryentry{agent}
+{
+  name=agent,
+  description={A program instance running on a \gls*{provider}}
+}
+
+\newglossaryentry{consumer}
+{
+  name=consumer,
+  description={Party that leases the hosting of an \gls*{agent} on a \gls*{provider} within the network}
+}
+
+\newglossaryentry{provider}
+{
+  name=provider,
+  description={Node responsible for negotiating service agreements, hosting \glspl*{agent} according to active leases, and receiving leasing fees.}
+}
+
+\newglossaryentry{auditor}
+{
+  name=auditor,
+  description={Node responsible for verifying the execution of \glspl*{agent} involved in active leases and providing attestations to authorize the payment of leasing fees.}
+}
+
+\newacronym{pcid}{PCID}{The Program Content Identifier}
+
+%% Watermark
+% \usepackage{draftwatermark}
+
+
+%% Document
+\begin{document}
+
+\title{Ocelloids Network Specification}
+\author{The Zone Council, SO/DA}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+This document presents the functional specification of the Ocelloids Network,
+a blockchain protocol designed to facilitate the secure and transparent leasing of software agents.
+It incorporates a continuous service attestation process to ensure the network's continuous and reliable operation.
+\end{abstract}
+
+%% Table of contents
+\newpage
+
+\tableofcontents
+
+%% Sections
+\newpage
+
+\section{Introduction}\label{sec:introduction}
+
+The Ocelloids Network is a collection of nodes governed by an onchain registry, ensuring vetted access and well-defined roles for \glspl{provider} and \glspl{auditor}.
+
+Operating as a marketplace, the network enables \glspl{consumer} to lease software \glspl{agent} from \glspl{provider}, leveraging blockchain technology for automated leasing and settlement.
+Continuous \nameref{sec:service-attestation}, conducted by \glspl{auditor}, ensures the network's ongoing reliable operation.
+
+\section{Network}
+
+An Ocelloids network is a collection of nodes under a common trust zone with vetted access for participation.
+
+The network is governed through an onchain registry, known as the \nameref{sec:network-registry}, containing participant information and their \nameref{sec:network-roles}.
+
+Network participants have well-known identities tied to specific organizations, geolocations, and publicly accessible endpoints.
+
+\subsection{Network Registry}\label{sec:network-registry}
+
+The network registry defines a trust zone characterized by designated sovereign and administrative accounts. Each of these accounts is endowed with privileges related to the onboarding and offboarding processes of service providers and auditors.
+These procedures play a critical role as they establish connections with entities subject to liabilities and potentially involve the establishment of legally binding contractual agreements.
+
+Each participant of the network has an associated \nameref{table:party-record}, which includes essential information for locating service providers and verifying the authenticity of digital signatures.
+
+\begin{xltabular}{\linewidth}{ l  X }
+  \caption{Party Record} 
+  \label{table:party-record}\\
+  \toprule
+   Property & Description  \\
+  \midrule
+  \endfirsthead
+  \endhead
+  \bottomrule
+  \endfoot
+  
+  Accounts & Operator and Treasurer accounts. \\ \addlinespace
+  
+  Contact Details & E-mail, Organization Name, etc. \\   \addlinespace
+  
+  Endpoints & URLs\cite{rfc3986} of the public endpoints. \\  \addlinespace
+  
+  Geolocation & Geographic point location\cite{iso6709}. \\  \addlinespace
+    
+  Role & The node role (section \ref{sec:network-roles}). \\ \addlinespace
+  
+\end{xltabular}
+
+\subsection{Network Roles}\label{sec:network-roles}
+
+The network encompasses two node roles:
+\begin{description}
+  \item[\emph{\Gls*{provider} Node}] Negotiates service agreements, executes agent in accordance with active leases and receives leasing fees.
+  \item[\emph{\Gls*{auditor} Node}] Verifies the execution of agents involved in active leases and provides attestations to authorize the payment of leasing fees.
+\end{description}
+
+\section{Service Leasing}\label{sec:leasing}
+
+The service leasing process involves consumers requesting service offers, depositing funds onto the blockchain for \gls{agent} execution, undergoing continuous service level attestations, managing periodic payment claims, and facilitating automatic lease renewals.
+
+\subsection{Service Agreement}\label{sec:service-agreement}
+
+The service agreement process mandates that the \gls{consumer} commits a deposit before the \gls{provider} provisions the \gls{agent}.
+The high-level steps are as follows:
+
+\begin{enumerate}
+  \item \emph{Request Quote}. The \gls{consumer} initiates the leasing process by submitting a quote request to the \gls{provider}, specifying the desired \gls{program-id} for execution.
+  
+  \item \emph{Service Offer}. The \gls{provider} responds with a service offer, providing details such as the \gls{program-id} to be executed, the leasing period duration in number of blocks, leasing fee, and minimum deposit required.
+  
+  \item \emph{Place Deposit}. The \gls{consumer} submits a deposit to the blockchain, specifying the offer and the transfer amount. The funds for one leasing period are locked, with any remaining funds available for withdrawal by the consumer at any time.
+  
+  \item \emph{Confirm Deposit}. The blockchain issues a deposit receipt for the offer to the \gls{consumer}, confirming the deposit. The \gls{consumer} then sends this receipt to the \gls{provider}.
+  
+  \item \emph{Provision Agent}. The \gls{provider} verifies the deposit and provisions the \gls{agent} based on the accepted offer.
+  
+  \item \emph{Confirm Lease}. The \gls{provider} submits the deposit receipt to the blockchain to formalize the lease, receiving a lease receipt in response.
+  
+  \item \emph{Activate Lease}. The \gls{provider} acknowledges the lease activation to the \gls{consumer} upon receiving the lease receipt.
+\end{enumerate}
+
+\subsection{Service Attestation}\label{sec:service-attestation}
+
+The service attestation process\footnote{
+  This process assumes blocks as data sources, necessitating a generalization of the process to support attestations from off-chain data sources.
+} involves \glspl{auditor} continuously verifying the accurate operation and fulfillment of the agents hosted by a \glspl{provider} under the leasing duration.
+The attestation process operates within the timeframe of a leasing period.
+During the period, the provider commits a verifiable proof of the processing of each block.
+Since the blocks could be processed out of order, the \gls{provider} maintains a local verifiable key-value map independent of the insertion order, such as a sparse Merkle tree\cite{cryptoeprint:2016/683}.
+The commitment to the map adds a pair $(k, v)$, where $k=B_{hash}$ and $v=\text{digest}(Log_{out})$.
+The top hash of the verifiable map must be anchored in the blockchain at the end of the period.
+The attestation process of each period unfolds as follows:
+
+\begin{enumerate}
+  \item \emph{Request Service Proofs}: The \gls{auditor} requests service proofs for a random sample\footnote{
+    A simple approach would be to use Yamane's method ($n=\frac{N}{1+Ne^2}$) for $N$ blocks in the period, where $n\approx400$ for a 1-month period.
+  } of block hashes within the most recent anchored period. $B_{samp}=\{B_{hash}^0,\ldots,B_{hash}^n\}$.
+  
+  \item \emph{Present Service Proofs}: The \gls{provider} presents the requested inclusion proofs for the given block hashes. $P_{samp}=\{M_{proof}(x) : x \in B_{samp}\}$.
+  
+  \item \emph{Verify Service Proofs}: The \gls{auditor} verifies the inclusion proofs:
+    \begin{enumerate}
+      \item Confirms the inclusion of the proof using the anchored top hash for the period.
+      \item Independently processes the selected blocks to verify that the resulting values align with the given values from the provider.
+    \end{enumerate}
+  
+  \item \emph{Record Attestation}: The \gls{auditor} submits a signed attestation of the verified period. This unlocks\footnote{
+    Variations could require signatures from multiple auditors.
+  } the period for payment collection.
+\end{enumerate}
+
+This continuous attestation process ensures the maintenance of verified operational records, serving as a prerequisite for capturing payments during lease periods.
+
+
+\clearpage
+
+\printglossary
+
+\bibliography{std.bib}
+
+\end{document}
