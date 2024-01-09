@@ -155,7 +155,7 @@ During the period, the provider commits a verifiable proof of the processing of 
 Since the blocks could be processed out of order, the \gls{provider} maintains a local verifiable key-value map independent of the insertion order, such as a sparse Merkle tree\cite{cryptoeprint:2016/683}.
 The commitment to the map adds a pair $(k, v)$, where $k=B_{hash}$ and $v=\text{digest}(Log_{out})$.
 The top hash of the verifiable map must be anchored in the blockchain at the end of the period.
-The attestation process of each period unfolds as follows:
+The attestation process for each period works as follows:
 
 \begin{enumerate}
   \item \emph{Request Service Proofs}: The \gls{auditor} requests service proofs for a random sample\footnote{
