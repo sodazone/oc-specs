@@ -170,9 +170,11 @@ The attestation process of each period unfolds as follows:
       \item Independently processes the selected blocks to verify that the resulting values align with the given values from the provider.
     \end{enumerate}
   
-  \item \emph{Record Attestation}: The \gls{auditor} submits a signed attestation of the verified period. This unlocks\footnote{
+  \item \emph{Record Attestation}: The \gls{auditor} submits a signed attestation of the verified period. The attestation authorizes\footnote{
     Variations could require signatures from multiple auditors.
-  } the period for payment collection.
+  } the payment of leasing fees\footnote{
+    The authorized payment should be captured by the \gls{provider} and could entail the deducation of a managment fee accrued to the \gls{auditor}/s.
+  } by the \gls{provider}.
 \end{enumerate}
 
 This continuous attestation process ensures the maintenance of verified operational records, serving as a prerequisite for capturing payments during lease periods.
