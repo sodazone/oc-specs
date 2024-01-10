@@ -36,7 +36,7 @@
 
 %% Lists
 \usepackage[shortlabels]{enumitem}
-\setlist[description]{style=nextline}
+\setlist[description]{style=nextline,font=\normalfont\emph\space}
 
 %% Glossaries
 \usepackage[toc,acronym]{glossaries}
