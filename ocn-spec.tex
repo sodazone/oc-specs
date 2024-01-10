@@ -138,7 +138,7 @@ The high-level steps are as follows:
 \begin{enumerate}
   \item \emph{Request Quote}. The \gls{consumer} initiates the leasing process by submitting a quote request to the \gls{provider}, specifying the desired \gls{program-id} for execution.
   
-  \item \emph{Service Offer}. The \gls{provider} responds with a service offer, providing details such as the \gls{program-id} to be executed, the leasing period duration in number of blocks, leasing fee, and minimum deposit required.
+  \item \emph{Service Offer}. The \gls{provider} responds with a service offer, providing details such as the program content identifier to be executed, the leasing period duration in number of blocks, leasing fee, and minimum deposit required.
   
   \item \emph{Place Deposit}. The \gls{consumer} submits a deposit to the blockchain, specifying the offer and the transfer amount. The funds for one leasing period are locked, with any remaining funds available for withdrawal by the consumer at any time.
   
@@ -165,7 +165,7 @@ The attestation process for each period works as follows:
 
 \begin{enumerate}
   \item \emph{Request Service Proofs}. The \gls{auditor} requests service proofs for a random sample\footnote{
-    A simple approach would be to use Yamane's method ($n=\frac{N}{1+Ne^2}$) for $N$ blocks in the period, where $n\approx400$ for a 1-month period.
+    A simple approach would be to use Yamane's method ($n=\frac{N}{1+Ne^2}$) for $N$ blocks in the period, where $n\approx400$ for a 1-month period with 95\% confidence.
   } of block hashes within the most recent anchored period. $B_{samp}=\{Block_{hash}^0,\ldots,Block_{hash}^n\}$.
   
   \item \emph{Present Service Proofs}. The \gls{provider} presents the requested inclusion proofs for the given block hashes. $P_{samp}=\{Proof(b) : b \in B_{samp}\}$,
@@ -205,7 +205,7 @@ At the end of each leasing period, the \gls{provider} must claim the leasing fee
     \item \emph{Renewal Check}. \Gls{provider} checks renewal conditions:
       \begin{enumerate}
         \item The lease is active.
-        \item Enough funds for next period in the \gls{consumer} account.
+        \item Sufficient funds for next period in the \gls{consumer} account.
       \end{enumerate}
     \item
       \begin{enumerate}[(i)]
