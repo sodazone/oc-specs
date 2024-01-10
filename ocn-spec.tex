@@ -56,7 +56,7 @@
 \begin{abstract}
 This document outlines the functional specifications of the Ocelloids network, a system for secure and transparent leasing of software agents that observe, correlate, and respond to blockchain activity.
 The network comprises provider nodes hosting agents under negotiated leases with consumers.
-A continuous service attestation process ensures reliable agent operation, while the network registry governs onboarding and offboarding processes for service providers and auditors within a trust zone.
+A continuous service attestation process ensures reliable agent operation, while the network registry controls the admission and revocation processes for service providers and auditors within a trust zone.
 The document details network roles, leasing processes, and attestation methods, providing a comprehensive understanding of the Ocelloids network's functionalities.
 \end{abstract}
 
@@ -71,7 +71,7 @@ The document details network roles, leasing processes, and attestation methods, 
 
 The Ocelloids network operates as a real-time reactive layer with software \glspl*{agent} that observe, correlate, and respond to blockchain activity.
 These \gls*{program} instances, hosted by \gls*{provider} nodes in a leasing model, naturally connect offchain data with onchain activity.
-\Glspl*{provider} undergo a vetted onboarding process within a trust zone and operate within defined geographical boundaries.
+\Glspl*{provider} undergo an admission process within a trust zone and operate within defined geographical boundaries, subject to applicable laws.
 The \nameref{sec:service-attestation} process ensures the reliable functioning of the \glspl*{agent}, enabling \glspl*{provider} to earn leasing fees for hosting them.
 
 \section{Network}
@@ -84,7 +84,7 @@ Network participants have well-known identities tied to specific organizations, 
 
 \subsection{Network Registry}\label{sec:network-registry}
 
-The network registry defines a trust zone characterized by designated sovereign and administrative accounts. Each of these accounts is endowed with privileges related to the onboarding and offboarding processes of service providers and auditors.
+The network registry defines a trust zone characterized by designated sovereign and administrative accounts. Each of these accounts is endowed with privileges related to the admission and revocation of service providers and auditors.
 These procedures play a critical role as they establish connections with entities subject to liabilities and potentially involve the establishment of legally binding contractual agreements.
 
 Each participant of the network has an associated \nameref{table:party-record}, which includes essential information for locating service providers and verifying the authenticity of digital signatures.
@@ -164,26 +164,29 @@ The attestation process for each period works as follows:
     A simple approach would be to use Yamane's method ($n=\frac{N}{1+Ne^2}$) for $N$ blocks in the period, where $n\approx400$ for a 1-month period.
   } of block hashes within the most recent anchored period. $B_{samp}=\{Block_{hash}^0,\ldots,Block_{hash}^n\}$.
   
-  \item \emph{Present Service Proofs}. The \gls{provider} presents the requested inclusion proofs for the given block hashes. $P_{samp}=\{proof(b) : b \in B_{samp}\}$,
-  where $proof$ produces an inclusion proof for the commited value $v$ on the key $b$.
+  \item \emph{Present Service Proofs}. The \gls{provider} presents the requested inclusion proofs for the given block hashes. $P_{samp}=\{Proof(b) : b \in B_{samp}\}$,
+  where $Proof$ produces an inclusion proof for the commited value $v$ on the key $b$.
   
   \item \emph{Verify Service Proofs}. The \gls{auditor} verifies the inclusion proofs $P_{samp}$.
     \begin{enumerate}
       \item Confirms the inclusion proof using the anchored top hash for the period.
       \item Independently processes the selected blocks to verify that the digest of the resulting log output matches the value $v$ of the requested block in the proof.
     \end{enumerate}
-    \begin{description}
-      \item[on successful verification] \emph{Record Attestation}. The \gls{auditor} submits a signed attestation of the verified period. The attestation authorizes\footnote{
+  \item
+    \begin{enumerate}[(i)]
+      \item \textbf{On successful verification} \\
+      \emph{Record Attestation}. The \gls{auditor} submits a signed attestation of the verified period. The attestation authorizes\footnote{
         Variations could require signatures from multiple auditors.
       } the payment of leasing fees\footnote{
         The authorized payment should be captured by the \gls{provider} and could entail the deducation of a managment fee accrued to the \gls{auditor}/s.
       } by the \gls{provider}.
-      \item[otherwise] \emph{Record Dispute}. The \gls{auditor} submits a signed dispute with details for further resolution\footnote{
+      \item \textbf{Otherwise} \\
+      \emph{Record Dispute}. The \gls{auditor} submits a signed dispute with details for further resolution\footnote{
         While operating in a vetted governance model (i.e., without funds at stake),
-        the resolution is under the discretion of the trust zone sovereign entities,
-        who are responsible for banning the misbehaving party and transferring funds to the rightful party.
+        the resolution falls under the discretion of the trust zone sovereign entities,
+        who are responsible for revoking the misbehaving party and transferring funds to the rightful party.
       }.
-    \end{description}
+    \end{enumerate}
 
 \end{enumerate}
 
@@ -200,10 +203,13 @@ At the end of each leasing period, the \gls{provider} must claim the leasing fee
         \item The lease is active.
         \item Enough funds for next period in the \gls{consumer} account.
       \end{enumerate}
-      \begin{description}
-        \item[on successful check] \emph{Renew Lease}. Blockchain initiates the renewal process, locking funds for the next period.
-        \item[otherwise] \emph{Cancel Lease}. Blockchain cancels the lease, and the \gls{provider} takes appropriate actions.
-      \end{description}
+    \item
+      \begin{enumerate}[(i)]
+        \item \textbf{On successful check} \\
+          \emph{Renew Lease}. Blockchain initiates the renewal process, locking funds for the next period.
+        \item \textbf{Otherwise} \\
+          \emph{Cancel Lease}. Blockchain cancels the lease, and the \gls{provider} takes appropriate actions to decommission the \gls{agent}.
+      \end{enumerate}
 \end{enumerate}
 
 This process ensures a smooth transition between leasing periods, with automatic renewals and the flexibility to cancel if necessary.

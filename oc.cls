@@ -35,7 +35,7 @@
 \usepackage{booktabs}
 
 %% Lists
-\usepackage{enumitem}
+\usepackage[shortlabels]{enumitem}
 \setlist[description]{style=nextline}
 
 %% Glossaries
