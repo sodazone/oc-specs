@@ -30,6 +30,9 @@
 }
 \newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1}}}
 
+%% Notes
+\usepackage{todonotes}
+
 %% Tables
 \usepackage{xltabular}
 \usepackage{booktabs}

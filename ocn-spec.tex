@@ -9,12 +9,6 @@
   description={Package containing executable bytecode or source code published through vetted catalogues}
 }
 
-\newglossaryentry{program-id}
-{
-  name={program content identifier},
-  description={Content-addressable location where the \gls*{program} package can be retrieved; e.g., an IPFS CID}
-}
-
 \newglossaryentry{agent}
 {
   name=agent,
@@ -52,6 +46,8 @@
 \author{The Zone Council, SO/DA}
 \date{\today}
 \maketitle
+
+\todo[inline]{This document is a \textbf{work in progress}.}
 
 \begin{abstract}
 This document outlines the functional specifications of the Ocelloids network, a system for secure and transparent leasing of software agents that observe, correlate, and respond to blockchain activity.
@@ -122,9 +118,18 @@ The network encompasses two node roles:
   \item[\emph{\Gls*{auditor} Node}] Verifies the execution of the \glspl{agent} involved in active leases and provides attestations to authorize the payment of leasing fees.
 \end{description}
 
+\section{Programs Catalog}\label{sec:programs}
+
+The Ocelloids network provides a curated catalog of programs suitable to be hosted.
+These \glspl{program} are organized into packages identified by content-addressable identifiers.
+Each package contains source code and/or binary files, along with a manifest describing the program and its necessary hosting capabilities.
+An instance of a program is referred to as an \gls{agent} and possesses a unique identifier.
+
+\todo[inline]{Reference Ocelloids Node spec. when written.}
+
 \section{Service Leasing}\label{sec:leasing}
 
-The service leasing process involves consumers requesting service offers, depositing funds onto the blockchain for \gls{agent} execution, undergoing continuous service attestations, managing periodic payment claims, and facilitating automatic lease renewals.
+The service leasing process involves consumers requesting service offers, depositing funds to pay for \gls{agent} hosting, undergoing continuous service attestations, managing periodic payment claims, and facilitating automatic lease renewals.
 
 \subsection{Service Agreement}\label{sec:service-agreement}
 
