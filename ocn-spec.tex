@@ -54,25 +54,25 @@
 \maketitle
 
 \begin{abstract}
-This document presents the functional specification of the Ocelloids Network,
-a blockchain protocol designed to facilitate the secure and transparent leasing of software agents.
-It incorporates a continuous service attestation process to ensure the network's continuous and reliable operation.
+This document outlines the functional specifications of the Ocelloids network, a system for secure and transparent leasing of software agents that observe, correlate, and respond to blockchain activity.
+The network comprises provider nodes hosting agents under negotiated leases with consumers.
+A continuous service attestation process ensures reliable agent operation, while the network registry governs onboarding and offboarding processes for service providers and auditors within a trust zone.
+The document details network roles, leasing processes, and attestation methods, providing a comprehensive understanding of the Ocelloids network's functionalities.
 \end{abstract}
 
 %% Table of contents
-\newpage
-
-\tableofcontents
+%%\newpage
+%%\tableofcontents
 
 %% Sections
 \newpage
 
 \section{Introduction}\label{sec:introduction}
 
-The Ocelloids Network is a collection of nodes governed by an onchain registry, ensuring vetted access and well-defined roles for \glspl{provider} and \glspl{auditor}.
-
-Operating as a marketplace, the network enables \glspl{consumer} to lease software \glspl{agent} from \glspl{provider}, leveraging blockchain technology for automated leasing and settlement.
-Continuous \nameref{sec:service-attestation}, conducted by \glspl{auditor}, ensures the network's ongoing reliable operation.
+The Ocelloids network operates as a real-time reactive layer with software \glspl*{agent} that observe, correlate, and respond to blockchain activity.
+These \gls*{program} instances, hosted by \gls*{provider} nodes in a leasing model, naturally connect offchain data with onchain activity.
+\Glspl*{provider} undergo a vetted onboarding process within a trust zone and operate within defined geographical boundaries.
+The \nameref{sec:service-attestation} process ensures the reliable functioning of the \glspl*{agent}, enabling \glspl*{provider} to earn leasing fees for hosting them.
 
 \section{Network}
 
@@ -96,14 +96,16 @@ Each participant of the network has an associated \nameref{table:party-record}, 
    Property & Description  \\
   \midrule
   \endfirsthead
+   Property & Description  \\
+  \midrule
   \endhead
   \bottomrule
   \endfoot
   
-  Accounts & Operator and Treasurer accounts. \\ \addlinespace
-  
-  Contact Details & E-mail, Organization Name, etc. \\   \addlinespace
-  
+  Subject &  Distinguished name\cite{x510}. \\ \addlinespace
+
+  Accounts & Operator and treasurer blockchain accounts. \\ \addlinespace
+    
   Endpoints & URLs\cite{rfc3986} of the public endpoints. \\  \addlinespace
   
   Geolocation & Geographic point location\cite{iso6709}. \\  \addlinespace
@@ -122,11 +124,11 @@ The network encompasses two node roles:
 
 \section{Service Leasing}\label{sec:leasing}
 
-The service leasing process involves consumers requesting service offers, depositing funds onto the blockchain for \gls{agent} execution, undergoing continuous service level attestations, managing periodic payment claims, and facilitating automatic lease renewals.
+The service leasing process involves consumers requesting service offers, depositing funds onto the blockchain for \gls{agent} execution, undergoing continuous service attestations, managing periodic payment claims, and facilitating automatic lease renewals.
 
 \subsection{Service Agreement}\label{sec:service-agreement}
 
-The service agreement process mandates that the \gls{consumer} commits a deposit before the \gls{provider} provisions the \gls{agent}.
+The service agreement process mandates that the \gls{consumer} deposit funds to cover at least one period before the \gls{provider} provisions the \gls{agent}.
 The high-level steps are as follows:
 
 \begin{enumerate}
@@ -148,37 +150,64 @@ The high-level steps are as follows:
 \subsection{Service Attestation}\label{sec:service-attestation}
 
 The service attestation process\footnote{
-  This process assumes blocks as data sources, necessitating a generalization of the process to support attestations from off-chain data sources.
+  For non-deterministic sources affecting the program output, a snapshot mechanism must be provided for reproducibility.
 } involves \glspl{auditor} continuously verifying the accurate operation and fulfillment of the agents hosted by a \glspl{provider} under the leasing duration.
 The attestation process operates within the timeframe of a leasing period.
 During the period, the provider commits a verifiable proof of the processing of each block.
 Since the blocks could be processed out of order, the \gls{provider} maintains a local verifiable key-value map independent of the insertion order, such as a sparse Merkle tree\cite{cryptoeprint:2016/683}.
-The commitment to the map adds a pair $(k, v)$, where $k=B_{hash}$ and $v=\text{digest}(Log_{out})$.
-The top hash of the verifiable map must be anchored in the blockchain at the end of the period.
+The commitment to the map adds a pair $(k, v)$, where $k=Block_{hash}$ and $v=\text{digest}(Program_{output})$.
+The \gls{provider} must anchor the top hash of the verifiable map at the end of the period.
 The attestation process for each period works as follows:
 
 \begin{enumerate}
-  \item \emph{Request Service Proofs}: The \gls{auditor} requests service proofs for a random sample\footnote{
+  \item \emph{Request Service Proofs}. The \gls{auditor} requests service proofs for a random sample\footnote{
     A simple approach would be to use Yamane's method ($n=\frac{N}{1+Ne^2}$) for $N$ blocks in the period, where $n\approx400$ for a 1-month period.
-  } of block hashes within the most recent anchored period. $B_{samp}=\{B_{hash}^0,\ldots,B_{hash}^n\}$.
+  } of block hashes within the most recent anchored period. $B_{samp}=\{Block_{hash}^0,\ldots,Block_{hash}^n\}$.
   
-  \item \emph{Present Service Proofs}: The \gls{provider} presents the requested inclusion proofs for the given block hashes. $P_{samp}=\{M_{proof}(x) : x \in B_{samp}\}$.
+  \item \emph{Present Service Proofs}. The \gls{provider} presents the requested inclusion proofs for the given block hashes. $P_{samp}=\{proof(b) : b \in B_{samp}\}$,
+  where $proof$ produces an inclusion proof for the commited value $v$ on the key $b$.
   
-  \item \emph{Verify Service Proofs}: The \gls{auditor} verifies the inclusion proofs:
+  \item \emph{Verify Service Proofs}. The \gls{auditor} verifies the inclusion proofs $P_{samp}$.
     \begin{enumerate}
-      \item Confirms the inclusion of the proof using the anchored top hash for the period.
-      \item Independently processes the selected blocks to verify that the resulting values align with the given values from the provider.
+      \item Confirms the inclusion proof using the anchored top hash for the period.
+      \item Independently processes the selected blocks to verify that the digest of the resulting log output matches the value $v$ of the requested block in the proof.
     \end{enumerate}
-  
-  \item \emph{Record Attestation}: The \gls{auditor} submits a signed attestation of the verified period. The attestation authorizes\footnote{
-    Variations could require signatures from multiple auditors.
-  } the payment of leasing fees\footnote{
-    The authorized payment should be captured by the \gls{provider} and could entail the deducation of a managment fee accrued to the \gls{auditor}/s.
-  } by the \gls{provider}.
+    \begin{description}
+      \item[on successful verification] \emph{Record Attestation}. The \gls{auditor} submits a signed attestation of the verified period. The attestation authorizes\footnote{
+        Variations could require signatures from multiple auditors.
+      } the payment of leasing fees\footnote{
+        The authorized payment should be captured by the \gls{provider} and could entail the deducation of a managment fee accrued to the \gls{auditor}/s.
+      } by the \gls{provider}.
+      \item[otherwise] \emph{Record Dispute}. The \gls{auditor} submits a signed dispute with details for further resolution\footnote{
+        While operating in a vetted governance model (i.e., without funds at stake),
+        the resolution is under the discretion of the trust zone sovereign entities,
+        who are responsible for banning the misbehaving party and transferring funds to the rightful party.
+      }.
+    \end{description}
+
 \end{enumerate}
 
-This continuous attestation process ensures the maintenance of verified operational records, serving as a prerequisite for capturing payments during lease periods.
+This continuous attestation process ensures the maintenance of verified operational records, serving as a prerequisite for claiming leasing fees.
 
+\subsection{Claim \textit{\&} Renewal}\label{sec:claim-renewal}
+
+At the end of each leasing period, the \gls{provider} must claim the leasing fees and an automatic renewal process is initiated.
+\begin{enumerate}
+    \item \emph{Claim Fees}. \Gls{provider} claims the payment of the fees for the leasing period by submitting a transaction to the blockchain; e.g., \textit{ClaimPaymentForPeriod}.
+    \item \emph{Verify \& Transfer}. Blockchain verifies the latest \gls{agent} operational attestation and transfers the funds to the \gls{provider}.
+    \item \emph{Renewal Check}. \Gls{provider} checks renewal conditions:
+      \begin{enumerate}
+        \item The lease is active.
+        \item Enough funds for next period in the \gls{consumer} account.
+      \end{enumerate}
+      \begin{description}
+        \item[on successful check] \emph{Renew Lease}. Blockchain initiates the renewal process, locking funds for the next period.
+        \item[otherwise] \emph{Cancel Lease}. Blockchain cancels the lease, and the \gls{provider} takes appropriate actions.
+      \end{description}
+\end{enumerate}
+
+This process ensures a smooth transition between leasing periods, with automatic renewals and the flexibility to cancel if necessary.
+Consumers are responsible for maintaining sufficient deposit funds to cover renewals.
 
 \clearpage
 

@@ -11,6 +11,9 @@
 \usepackage[english]{babel}
 \usepackage{titlesec}
 
+%% Symbols
+\def\etc{\&c.}
+
 %% Colors
 \usepackage[x11names]{xcolor}
 
