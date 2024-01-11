@@ -193,15 +193,17 @@ The attestation process for each period works as follows:
 \begin{enumerate}
   \item \emph{Request Service Proofs}. The \gls{auditor} requests service proofs for a random sample\footnote{
     A simple approach would be to use Yamane's method ($n=\frac{N}{1+Ne^2}$) for $N$ blocks in the period, where $n\approx400$ for a 1-month period with 95\% confidence.
-  } of block hashes within the most recent anchored period. $B_{samp}=\{Block_{hash}^0,\ldots,Block_{hash}^n\}$.
+  } of block hashes from \gls{monchain} within the most recent anchored period. $B_{samp}=\{Block_{hash}^0,\ldots,Block_{hash}^n\}$.
   
-  \item \emph{Present Service Proofs}. The \gls{provider} presents the requested inclusion proofs for the given block hashes. $P_{samp}=\{Proof(b) : b \in B_{samp}\}$,
+  \item \emph{Present Service Proofs}. The \gls{provider} presents the requested inclusion proofs for the given \gls{monchain} block hashes. $P_{samp}=\{Proof(b) : b \in B_{samp}\}$,
   where $Proof$ produces an inclusion proof for the commited value $v$ on the key $b$.
   
   \item \emph{Verify Service Proofs}. The \gls{auditor} verifies the inclusion proofs $P_{samp}$.
     \begin{enumerate}
-      \item Confirms the inclusion proof using the anchored top hash for the period.
-      \item Independently processes the selected blocks to verify that the digest of the resulting log output matches the value $v$ of the requested block in the proof.
+      \item Confirms the inclusion proof using the anchored top hash for the period retrieved from \gls{refchain}.
+      \item Independently processes the selected blocks, retrieving them from \gls{monchain}\footnote{
+        We assume that the historical blocks of \gls*{monchain}/s for a leasing period are retrievable at the end of the period.
+      }, to verify that the digest of the resulting log output matches the value $v$ of the requested block in the proof.
     \end{enumerate}
   \item
     \begin{enumerate}[(i)]
