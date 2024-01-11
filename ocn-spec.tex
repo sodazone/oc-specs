@@ -203,7 +203,7 @@ The attestation process for each period works as follows.
       \item Confirms the inclusion proof using the anchored top hash for the period retrieved from \gls{mainchain}.
       \item Independently processes the selected blocks, retrieving them from \gls{monchain}\footnote{
         We assume that the historical blocks of \gls*{monchain}/s for a leasing period are retrievable at the end of the period.
-      }, to verify that the digest of the resulting log output matches the value $v$ of the requested block in the proof.
+      }, to verify that the digest of the resulting program output matches the value $v$ of the requested block in the proof.
     \end{enumerate}
   \item
     \begin{enumerate}[(i)]
