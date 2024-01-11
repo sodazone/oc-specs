@@ -186,14 +186,14 @@ The attestation process operates within the timeframe of a leasing period.
 The hosted \gls{agent} observes the activity of \gls{monchain}/s, processing each block, which constitutes the primary input of onchain data.
 The \gls{provider} commits a verifiable proof of the processing of each block to a locally maintained verifiable map.
 Since blocks could be processed out of order, the \gls{provider} maintains a local verifiable key-value map independent of the insertion order, such as a sparse Merkle tree\cite{cryptoeprint:2016/683}.
-The commitment to the map adds a pair $(k, v)$, where $k=Block_{hash}$ and $v=\text{digest}(Program_{output})$.
+The commitment to the map adds a pair $(k, v)$, where $k=BlockHash$ and $v=\text{digest}(ProgramOutput)$.
 The \gls{provider} must anchor the top hash of the verifiable map to the \gls{mainchain} at the end of the period.
 The attestation process for each period works as follows.
 
 \begin{enumerate}
   \item \emph{Request Service Proofs}. The \gls{auditor} requests service proofs for a random sample\footnote{
     A simple approach would be to use Yamane's method ($n=\frac{N}{1+Ne^2}$) for $N$ blocks in the period, where $n\approx400$ for a 1-month period with 95\% confidence.
-  } of block hashes from \gls{monchain} within the most recent anchored period. $B_{samp}=\{Block^{hash}_0,\ldots{Block^{hash}_n}\}$.
+  } of block hashes from \gls{monchain} within the most recent anchored period. $B_{samp}=\{BlockHash_0,\ldots{BlockHash_{n}}\}$.
   
   \item \emph{Present Service Proofs}. The \gls{provider} presents the requested inclusion proofs for the given \gls{monchain} block hashes. $P_{samp}=\{Proof(b) : b \in B_{samp}\}$,
   where $Proof$ produces an inclusion proof for the commited value $v$ on the key $b$.
