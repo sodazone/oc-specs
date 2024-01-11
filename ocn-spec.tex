@@ -193,7 +193,7 @@ The attestation process for each period works as follows.
 \begin{enumerate}
   \item \emph{Request Service Proofs}. The \gls{auditor} requests service proofs for a random sample\footnote{
     A simple approach would be to use Yamane's method ($n=\frac{N}{1+Ne^2}$) for $N$ blocks in the period, where $n\approx400$ for a 1-month period with 95\% confidence.
-  } of block hashes from \gls{monchain} within the most recent anchored period. $B_{samp}=\{Block_{hash}^0,\ldots,Block_{hash}^n\}$.
+  } of block hashes from \gls{monchain} within the most recent anchored period. $B_{samp}=\{Block^{hash}_0,\ldots{Block^{hash}_n}\}$.
   
   \item \emph{Present Service Proofs}. The \gls{provider} presents the requested inclusion proofs for the given \gls{monchain} block hashes. $P_{samp}=\{Proof(b) : b \in B_{samp}\}$,
   where $Proof$ produces an inclusion proof for the commited value $v$ on the key $b$.
