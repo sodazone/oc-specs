@@ -15,6 +15,12 @@
   description={A program instance running on a \gls*{provider} node}
 }
 
+\newglossaryentry{agentid}
+{
+  name={agent identifier},
+  description={A unique identifier for a program instance running in a specific host}
+}
+
 \newglossaryentry{consumer}
 {
   name=consumer,
@@ -31,6 +37,24 @@
 {
   name=auditor,
   description={Node responsible for verifying the execution of \glspl*{agent} involved in active leases and providing attestations to authorize the payment of leasing fees}
+}
+
+\newglossaryentry{monchain}
+{
+  name={monitored chain},
+  description={Blockchain that serves as onchain data source for an \gls*{agent}}
+}
+
+\newglossaryentry{refchain}
+{
+  name={reference chain},
+  description={Blockchain that provides the governance, discovery, leasing, anchoring and settlement functions for an Ocelloids network}
+}
+
+\newglossaryentry{programid}
+{
+  name={program identifier},
+  description={A unique content-bound identifier pointing to a program package stored in a content-addressable storage network}
 }
 
 %% Watermark
@@ -72,13 +96,13 @@ The \nameref{sec:service-attestation} process ensures the reliable functioning o
 
 An Ocelloids network is a collection of nodes under a common trust zone with vetted access for participation.
 
-The network is governed through an onchain registry, known as the \nameref{sec:network-registry}, containing participant information and their \nameref{sec:network-roles}.
+The network is governed through an onchain registry in the \gls{refchain}, known as the \nameref{sec:network-registry}, containing participant information and their \nameref{sec:network-roles}.
 
 Network participants have well-known identities tied to specific organizations, geolocations, and publicly accessible endpoints.
 
 \subsection{Network Registry}\label{sec:network-registry}
 
-The network registry defines a trust zone characterized by designated sovereign and administrative accounts.
+The network registry exists in the \gls{refchain} and delineates a trust zone characterized by designated sovereign and administrative accounts.
 These accounts are endowed with privileges related to the admission, suspension and termination of service providers and auditors in the network.
 These procedures play a critical role as they establish connections with entities subject to liabilities and potentially involve the establishment of legally binding contractual agreements.
 
@@ -99,7 +123,7 @@ Each participant of the network has an associated \nameref{table:party-record}, 
   
   Subject &  Distinguished name\cite{x510}. \\ \addlinespace
 
-  Accounts & Operator and treasurer blockchain account addresses. \\ \addlinespace
+  Accounts & Operator and treasurer account addresses. \\ \addlinespace
     
   Endpoints & URLs\cite{rfc3986} of the public endpoints. \\  \addlinespace
   
@@ -119,10 +143,10 @@ The network encompasses two node roles:
 
 \subsection{Program Catalog}\label{sec:programs}
 
-The Ocelloids network provides a curated catalog of programs suitable to be hosted.
-These \glspl{program} are organized into packages identified by content-addressable identifiers.
-Each package contains source code and/or binary files, along with a manifest describing the program and its necessary hosting capabilities.
-An instance of a program is referred to as an \gls{agent} and possesses a unique identifier.
+The Ocelloids network maintains a curated catalog on the \gls{refchain} of programs eligible for hosting.
+These programs are organized into packages identified by content-addressable identifiers and stored in a content-addressable storage network. 
+Each package contains source code and/or binary files, along with a manifest describing the program and its required hosting capabilities.
+An instance of a program is referred to as an \gls{agent} and possesses a unique \gls{agentid}.
 
 \todo[inline]{Reference Ocelloids Node spec. when written.}
 
@@ -133,20 +157,22 @@ The service leasing process involves consumers requesting service offers, deposi
 \subsection{Service Agreement}\label{sec:service-agreement}
 
 The service agreement process mandates that the \gls{consumer} deposit funds to cover at least one period before the \gls{provider} provisions the \gls{agent}.
+The \gls{consumer} queries the \nameref{sec:programs} to determine the identifier of the program it wishes to execute.
+The \glspl{provider} are discovered through the \nameref{sec:network-registry}.
 The high-level steps are as follows:
 
 \begin{enumerate}
-  \item \emph{Request Quote}. The \gls{consumer} initiates the leasing process by submitting a quote request to the \gls{provider}, specifying the desired program content identifier for execution.
+  \item \emph{Request Quote}. The \gls{consumer} initiates the leasing process by submitting a quote request to the \gls{provider}, specifying the desired \gls{programid} for execution.
   
-  \item \emph{Service Offer}. The \gls{provider} responds with a service offer, providing details such as the program content identifier to be executed, the leasing period duration in number of blocks, leasing fee, and minimum deposit required.
+  \item \emph{Service Offer}. The \gls{provider} responds with a service offer, providing details such as the \gls{programid} to be executed, the leasing period duration in number of blocks, leasing fee, and minimum deposit required.
   
-  \item \emph{Place Deposit}. The \gls{consumer} submits a deposit to the blockchain, specifying the offer and the transfer amount. The funds for one leasing period are locked, with any remaining funds available for withdrawal by the consumer at any time.
+  \item \emph{Place Deposit}. The \gls{consumer} submits a deposit to the \gls{refchain}, specifying the offer and the transfer amount. The funds for one leasing period are locked, with any remaining funds available for withdrawal by the consumer at any time.
   
-  \item \emph{Confirm Deposit}. The blockchain issues a deposit receipt for the offer to the \gls{consumer}, confirming the deposit. The \gls{consumer} then sends this receipt to the \gls{provider}.
+  \item \emph{Confirm Deposit}. The \gls{refchain} issues a deposit receipt for the offer to the \gls{consumer}, confirming the deposit. The \gls{consumer} then sends this receipt to the \gls{provider}.
   
   \item \emph{Provision Agent}. The \gls{provider} verifies the deposit and provisions the \gls{agent} based on the accepted offer.
   
-  \item \emph{Confirm Lease}. The \gls{provider} submits the deposit receipt to the blockchain to formalize the lease, receiving a lease receipt in response.
+  \item \emph{Confirm Lease}. The \gls{provider} submits the deposit receipt to the \gls{refchain} to formalize the lease, receiving a lease receipt in response.
   
   \item \emph{Activate Lease}. The \gls{provider} acknowledges the lease activation to the \gls{consumer} upon receiving the lease receipt.
 \end{enumerate}
@@ -157,10 +183,11 @@ The service attestation process\footnote{
   For non-deterministic sources affecting the program output, a snapshot mechanism must be provided for reproducibility.
 } involves \glspl{auditor} continuously verifying the accurate operation and fulfillment of the agents hosted by a \glspl{provider} under the leasing duration.
 The attestation process operates within the timeframe of a leasing period.
-During the period, the provider commits a verifiable proof of the processing of each block.
-Since the blocks could be processed out of order, the \gls{provider} maintains a local verifiable key-value map independent of the insertion order, such as a sparse Merkle tree\cite{cryptoeprint:2016/683}.
+The hosted \gls{agent} observes the activity of \gls{monchain}/s, processing each block, which constitutes the primary input of onchain data.
+The \gls{provider} commits a verifiable proof of the processing of each block to a locally maintained verifiable map.
+Since blocks could be processed out of order, the \gls{provider} maintains a local verifiable key-value map independent of the insertion order, such as a sparse Merkle tree\cite{cryptoeprint:2016/683}.
 The commitment to the map adds a pair $(k, v)$, where $k=Block_{hash}$ and $v=\text{digest}(Program_{output})$.
-The \gls{provider} must anchor the top hash of the verifiable map at the end of the period.
+The \gls{provider} must anchor the top hash of the verifiable map to the \gls{refchain} at the end of the period.
 The attestation process for each period works as follows:
 
 \begin{enumerate}
@@ -200,8 +227,8 @@ This continuous attestation process ensures the maintenance of verified operatio
 
 At the end of each leasing period, the \gls{provider} must claim the leasing fees and an automatic renewal process is initiated.
 \begin{enumerate}
-    \item \emph{Claim Fees}. \Gls{provider} claims the payment of the fees for the leasing period by submitting a transaction to the blockchain; e.g., \textit{ClaimPaymentForPeriod}.
-    \item \emph{Verify \& Transfer}. Blockchain verifies the latest \gls{agent} operational attestation and transfers the funds to the \gls{provider}.
+    \item \emph{Claim Fees}. \Gls{provider} claims the payment of the fees for the leasing period by submitting a transaction to the \gls{refchain}; e.g., \textit{ClaimPaymentForPeriod}.
+    \item \emph{Verify \& Transfer}. \Gls{refchain} verifies the latest \gls{agent} operational attestation and transfers the funds to the \gls{provider}.
     \item \emph{Renewal Check}. \Gls{provider} checks renewal conditions:
       \begin{enumerate}
         \item The lease is active.
@@ -210,9 +237,9 @@ At the end of each leasing period, the \gls{provider} must claim the leasing fee
     \item
       \begin{enumerate}[(i)]
         \item \textbf{On successful check} \\
-          \emph{Renew Lease}. Blockchain initiates the renewal process, locking funds for the next period.
+          \emph{Renew Lease}. \Gls{refchain} initiates the renewal process, locking funds for the next period.
         \item \textbf{Otherwise} \\
-          \emph{Cancel Lease}. Blockchain cancels the lease, and the \gls{provider} takes appropriate actions to decommission the \gls{agent}.
+          \emph{Cancel Lease}. \Gls{refchain} cancels the lease, and the \gls{provider} takes appropriate actions to decommission the \gls{agent}.
       \end{enumerate}
 \end{enumerate}
 
