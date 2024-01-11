@@ -135,7 +135,7 @@ Each participant of the network has an associated \nameref{table:party-record}, 
 
 \subsection{Network Roles}\label{sec:network-roles}
 
-The network encompasses two node roles:
+The network encompasses two node roles.
 \begin{description}
   \item[\emph{\Gls*{provider} Node}] Negotiates service agreements, hosts \glspl{agent} in accordance with active leases and receives leasing fees.
   \item[\emph{\Gls*{auditor} Node}] Verifies the execution of the \glspl{agent} involved in active leases and provides attestations to authorize the payment of leasing fees.
@@ -159,7 +159,7 @@ The service leasing process involves consumers requesting service offers, deposi
 The service agreement process mandates that the \gls{consumer} deposit funds to cover at least one period before the \gls{provider} provisions the \gls{agent}.
 The \gls{consumer} queries the \nameref{sec:programs} to determine the identifier of the program it wishes to execute.
 The \glspl{provider} are discovered through the \nameref{sec:network-registry}.
-The high-level steps are as follows:
+The high-level steps are as follows.
 
 \begin{enumerate}
   \item \emph{Request Quote}. The \gls{consumer} initiates the leasing process by submitting a quote request to the \gls{provider}, specifying the desired \gls{programid} for execution.
@@ -188,7 +188,7 @@ The \gls{provider} commits a verifiable proof of the processing of each block to
 Since blocks could be processed out of order, the \gls{provider} maintains a local verifiable key-value map independent of the insertion order, such as a sparse Merkle tree\cite{cryptoeprint:2016/683}.
 The commitment to the map adds a pair $(k, v)$, where $k=Block_{hash}$ and $v=\text{digest}(Program_{output})$.
 The \gls{provider} must anchor the top hash of the verifiable map to the \gls{refchain} at the end of the period.
-The attestation process for each period works as follows:
+The attestation process for each period works as follows.
 
 \begin{enumerate}
   \item \emph{Request Service Proofs}. The \gls{auditor} requests service proofs for a random sample\footnote{
@@ -225,13 +225,13 @@ The attestation process for each period works as follows:
 
 This continuous attestation process ensures the maintenance of verified operational records, serving as a prerequisite for claiming leasing fees.
 
-\subsection{Claim \textit{\&} Renewal}\label{sec:claim-renewal}
+\subsection{Payment \textit{\&} Lease Renewal}\label{sec:claim-renewal}
 
 At the end of each leasing period, the \gls{provider} must claim the leasing fees and an automatic renewal process is initiated.
 \begin{enumerate}
     \item \emph{Claim Fees}. \Gls{provider} claims the payment of the fees for the leasing period by submitting a transaction to the \gls{refchain}; e.g., \textit{ClaimPaymentForPeriod}.
     \item \emph{Verify \& Transfer}. \Gls{refchain} verifies the latest \gls{agent} operational attestation and transfers the funds to the \gls{provider}.
-    \item \emph{Renewal Check}. \Gls{provider} checks renewal conditions:
+    \item \emph{Renewal Check}. \Gls{provider} checks renewal conditions.
       \begin{enumerate}
         \item The lease is active.
         \item Sufficient funds for next period in the \gls{consumer} account.
