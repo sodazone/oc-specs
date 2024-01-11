@@ -193,12 +193,12 @@ The attestation process for each period works as follows.
 \begin{enumerate}
   \item \emph{Request Service Proofs}. The \gls{auditor} requests service proofs for a random sample\footnote{
     A simple approach would be to use Yamane's method ($n=\frac{N}{1+Ne^2}$) for $N$ blocks in the period, where $n\approx400$ for a 1-month period with 95\% confidence.
-  } of block hashes from \gls{monchain} within the most recent anchored period. $B_{samp}=\{BlockHash_0,\ldots{BlockHash_{n}}\}$.
+  } of block hashes $R$ from \gls{monchain} within the most recent anchored period.
   
-  \item \emph{Present Service Proofs}. The \gls{provider} presents the requested inclusion proofs for the given \gls{monchain} block hashes. $P_{samp}=\{Proof(b) : b \in B_{samp}\}$,
-  where $Proof$ produces an inclusion proof for the commited value $v$ on the key $b$.
+  \item \emph{Present Service Proofs}. The \gls{provider} presents the requested inclusion proofs for the given \gls{monchain} block hashes. $P_{R}=\{Proof(b_H) : b_H \in R\}$,
+  where $Proof$ produces an inclusion proof for the commited value $v$ on the key $b_H$.
   
-  \item \emph{Verify Service Proofs}. The \gls{auditor} verifies the inclusion proofs $P_{samp}$.
+  \item \emph{Verify Service Proofs}. The \gls{auditor} verifies the inclusion proofs $P_{R}$.
     \begin{enumerate}
       \item Confirms the inclusion proof using the anchored top hash for the period retrieved from \gls{mainchain}.
       \item Independently processes the selected blocks, retrieving them from \gls{monchain}\footnote{
