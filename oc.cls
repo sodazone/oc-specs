@@ -17,7 +17,7 @@
 %% Colors
 \usepackage[x11names]{xcolor}
 
-%% Links
+%% Configure Hyperreferences
 \usepackage[colorlinks=true]{hyperref}
 \hypersetup{
   colorlinks,
@@ -25,6 +25,10 @@
   urlcolor=Blue4,
   citecolor=Tomato4,
   linktoc=all,
+  breaklinks=true, pageanchor=true,%
+  pdfpagemode=UseNone,%
+  plainpages=false, bookmarksnumbered, bookmarksopen=true, bookmarksopenlevel=1,%
+  hypertexnames=true, pdfhighlight=/O,
   pdftitle={Ocelloids Network Specification},
   pdfauthor={SO/DA}
 }
