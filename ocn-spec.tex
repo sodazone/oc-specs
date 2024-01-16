@@ -98,7 +98,11 @@ An Ocelloids network is a collection of nodes under a common trust zone with vet
 
 The network is governed through an onchain registry in the \gls{mainchain}, known as the \nameref{sec:network-registry}, containing participant information and their \nameref{sec:network-roles}.
 
-Network participants have well-known identities tied to specific organizations, geolocations, and publicly accessible endpoints.
+Network participants have well-known identities tied to specific organizations, geographic locations, blockchain accounts\footnote{
+  A blockchain account address is typically derived from the public key of a cryptographic key pair.
+  Usually, this public key is recoverable from a digital signature, given the signed content.
+}, and publicly accessible endpoints.
+All actions carry a valid digital signature from the originating participant's key pair associated with a registered account, enabling verification.
 
 \subsection{Network Registry}\label{sec:network-registry}
 
@@ -123,7 +127,11 @@ Each participant of the network has an associated \nameref{table:party-record}, 
   
   Subject &  Distinguished name\cite{x510}. \\ \addlinespace
 
-  Accounts & Operator and treasurer account addresses. \\ \addlinespace
+  Accounts & Operator\footnote{
+    The operator account actively interacts with the blockchain, anchoring hashes, providing attestations, etc.
+  } and vault account\footnote{
+    The vault account accrues fees and its private key could be kept in cold storage.
+  } addresses. \\ \addlinespace
     
   Endpoints & URLs\cite{rfc3986} of the public endpoints. \\  \addlinespace
   
