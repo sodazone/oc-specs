@@ -95,7 +95,7 @@ The \nameref{sec:service-attestation} process ensures the reliable functioning o
 
 \section{Network}
 
-An Ocelloids network is a collection of nodes under a common trust zone with vetted access for participation.
+An Ocelloids network is a collection of nodes (section \ref{sec:node}) under a common trust zone with vetted access for participation.
 
 The network is governed through an onchain registry in the \gls{mainchain}, known as the \nameref{sec:network-registry}, containing participant information and their \nameref{sec:network-roles}.
 
@@ -150,14 +150,33 @@ The network encompasses two node roles.
   \item[\emph{\Gls*{auditor} Node}] Verifies the execution of the \glspl{agent} involved in active leases and provides attestations to authorize the payment of leasing fees.
 \end{description}
 
-\subsection{Program Catalog}\label{sec:programs}
+\section{Node}\label{sec:node}
+
+An Ocelloids node is a logical entity that could be deployed in multiple physical systems, i.e. in horizontally scalable clusters.
+Essentially, a logical network node provides:
+\begin{enumerate}
+  \item Ingress services for sourcing on-chain data.
+  \item Runtimes for program execution.
+  \item Remote endpoints to serve client connections.
+  \item Egress services for data emission and notification.
+\end{enumerate}
+
+\todo[inline]{Reference Ocelloids Node / Runtime spec. when written.}
+
+\section{Programs}\label{sec:programs}
+
+\subsection{Program Catalog}\label{sec:program-catalog}
 
 The Ocelloids network maintains a curated catalog on the \gls{mainchain} of programs eligible for hosting.
 These programs are organized into packages identified by content-addressable identifiers and stored in a content-addressable storage network. 
 Each package contains source code and/or binary files, along with a manifest describing the program and its required hosting capabilities.
 An instance of a program is referred to as an \gls{agent} and possesses a unique \gls{agentid}.
 
-\todo[inline]{Reference Ocelloids Node spec. when written.}
+\subsection{Program Execution}\label{sec:program-execution}
+
+When a program instance---or \gls{agent}---is hosted by an Ocelloids node, the node's runtime fulfills its execution according to the program's manifest.
+The runtime provides necessary resources and sandboxing mechanisms to ensure isolation and security.
+Programs interact with the node's ingress and egress services to access onchain data and emit data streams.
 
 \section{Service Leasing}\label{sec:leasing}
 
