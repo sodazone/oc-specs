@@ -95,7 +95,7 @@ The \nameref{sec:service-attestation} process ensures the reliable functioning o
 
 \section{Network}
 
-An Ocelloids network is a collection of nodes (section \ref{sec:node}) under a common trust zone with vetted access for participation.
+An Ocelloids network is a collection of nodes (section \ref{sec:nodes}) under a common trust zone with vetted access for participation.
 
 The network is governed through an onchain registry in the \gls{mainchain}, known as the \nameref{sec:network-registry}, containing participant information and their \nameref{sec:network-roles}.
 
@@ -150,12 +150,12 @@ The network encompasses two node roles.
   \item[\emph{\Gls*{auditor} Node}] Verifies the execution of the \glspl{agent} involved in active leases and provides attestations to authorize the payment of leasing fees.
 \end{description}
 
-\section{Node}\label{sec:node}
+\section{Nodes}\label{sec:nodes}
 
-An Ocelloids node is a logical entity that could be deployed in multiple physical systems, i.e. in horizontally scalable clusters.
+An Ocelloids node is a logical entity that could be deployed on multiple physical systems, e.g. horizontally scalable clusters.
 Essentially, a logical network node provides:
 \begin{enumerate}
-  \item Ingress services for sourcing on-chain data.
+  \item Ingress services for sourcing onchain data.
   \item Runtimes for program execution.
   \item Remote endpoints to serve client connections.
   \item Egress services for data emission and notification.
